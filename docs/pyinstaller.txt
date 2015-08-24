@@ -1,0 +1,1 @@
+python pyinstaller.py -F -n UrlImgPackage -o C:\Users\wen\Documents\GitHub\SX-UrlImgPackage\my.spec --version-file=C:\Users\wen\Documents\GitHub\SX-UrlImgPackage\file_version_info.txt --icon=C:\Users\wen\Documents\GitHub\SX-UrlImgPackage\logo.ico C:\Users\wen\Documents\GitHub\SX-UrlImgPackage\img_package_ser.py

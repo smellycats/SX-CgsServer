@@ -1,0 +1,5 @@
+flask=0.10.1
+Flask-RESTful=0.3.2
+Flask-HTTPAuth=2.5.0
+arrow=0.5.4
+requests=2.5.0
