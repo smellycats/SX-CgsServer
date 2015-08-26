@@ -12,7 +12,10 @@ class Config(object):
     PORT = '8099'
     # 数据库
     DATABASE = 'cgs.db'
-    #
+    #mysqldb
+    MYSQLDB = {'db': 'cgs', 'host': 'localhost',
+               'user': 'root', 'password': 'root'}
+    # 加密次数
     ROUNDS = 123456
     # token生存周期，默认1小时
     EXPIRES = 3600
