@@ -7,7 +7,7 @@ from flask import g, request
 from flask_restful import reqparse, abort, Resource
 from passlib.hash import sha256_crypt
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from playhouse.shortcuts import model_to_dict
+#from playhouse.shortcuts import model_to_dict
 
 from app import db, app, api, auth, limiter, logger
 from models import Users, Vehicle_gd
@@ -40,7 +40,7 @@ def verify_password(username, password):
 class Index(Resource):
     def get(self):
         return {'user_url': 'http://127.0.0.1:%s/v1/hbc' %
-                app.config['PORT']}, 200
+                app.config['PORT']}, 200,
         {'Cache-Control': 'public, max-age=60, s-maxage=60'}
 
 
@@ -146,7 +146,8 @@ class Vehicle(Resource):
                           'syr': i.syr,
                           'fzrq': i.fzrq})
 
-        return {'total_count': len(items), 'items': items}, 200
+        return {'total_count': len(items), 'items': items}, 200,
+        {'Cache-Control': 'public, max-age=60, s-maxage=60'}
 
 
 api.add_resource(Index, '/')
