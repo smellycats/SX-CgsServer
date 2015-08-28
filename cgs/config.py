@@ -12,13 +12,23 @@ class Config(object):
     PORT = '8099'
     # 数据库
     DATABASE = 'cgs.db'
-    #mysqldb
+    # mysqldb
     MYSQLDB = {'db': 'cgs', 'host': 'localhost',
                'user': 'root', 'password': 'root'}
-    # 加密次数
+    # 加密次数, int
     ROUNDS = 123456
-    # token生存周期，默认1小时
+    # token生存周期，默认1小时 int
     EXPIRES = 3600
+
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///../cgs.db'
+    SQLALCHEMY_BINDS = {
+        'cgs': 'mysql://root:root@localhost/cgs'
+    }
+    # 权限范围集合 set
+    SCOPE_SET = set()
+    # 用户权限范围 dict
+    SCOPE_USER = {}
+
 
 class Develop(Config):
     pass
