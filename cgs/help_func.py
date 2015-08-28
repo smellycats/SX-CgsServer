@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import urllib
 
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature
+
 
 def url_decode(query):
     d = {}
@@ -21,12 +23,18 @@ def q_decode(q):
             d[k] = v
     return d
 
-if __name__ == "__main__":
-    #s = get_hpzl(u'粤L12345', 5)
-    #print s[0], s[1]
-    #print urldecode(u'q%3D粤L12=34%2Bhpzl:02+cllx:K31%26order=desc')
-    query = 'q'
-    print url_decode(query);
-    #q = u'\u7ca4L12=34+hpzl:02+cllx:K31'
-    #print q_decode(q)
+def verify_auth_token(token, key):
+    s = Serializer(key)
+    try:
+        return s.loads(token)
+    except SignatureExpired:
+        return 'expired' # valid token, but expired
+    except BadSignature:
+        return None # invalid token
+
+def row2dict(row):
+    d = {}
+    for col in row.__table__.columns:
+        d[col.name] = getattr(row, col.name)
+    return d
 
