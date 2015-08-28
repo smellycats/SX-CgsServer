@@ -5,7 +5,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_httpauth import HTTPBasicAuth, HTTPDigestAuth
 from flask_limiter import Limiter, HEADERS
-from peewee import SqliteDatabase, MySQLDatabase
+from flask.ext.sqlalchemy import SQLAlchemy
 
 from config import Production
 
@@ -15,13 +15,7 @@ app = Flask(__name__)
 app.config.from_object(Production())
 api = Api(app)
 
-db = SqliteDatabase(app.config['DATABASE'], journal_mode='WAL')
-mysql_db = MySQLDatabase(
-    app.config['MYSQLDB']['db'],
-    user=app.config['MYSQLDB']['user'],
-    password=app.config['MYSQLDB']['password'],
-    host=app.config['MYSQLDB']['host']
-)
+db = SQLAlchemy(app)
 
 auth = HTTPBasicAuth()
 
