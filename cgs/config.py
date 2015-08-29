@@ -24,8 +24,6 @@ class Config(object):
     SQLALCHEMY_BINDS = {
         'cgs': 'mysql://root:root@localhost/cgs'
     }
-    # 权限范围集合 set
-    SCOPE_SET = set()
     # 用户权限范围 dict
     SCOPE_USER = {}
 
