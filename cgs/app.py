@@ -6,6 +6,7 @@ from flask_restful import Api
 from flask_httpauth import HTTPBasicAuth, HTTPDigestAuth
 from flask_limiter import Limiter, HEADERS
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.cache import Cache
 
 from config import Production
 
@@ -23,7 +24,9 @@ logger = logging.getLogger('root')
 
 limiter = Limiter(app, headers_enabled=True, global_limits=["10/minute"])
 limiter.header_mapping = {
-    HEADERS.LIMIT : "X-RateLimit-Limit",
-    HEADERS.RESET : "X-RateLimit-Reset",
+    HEADERS.LIMIT: "X-RateLimit-Limit",
+    HEADERS.RESET: "X-RateLimit-Reset",
     HEADERS.REMAINING: "X-RateLimit-Remaining"
 }
+
+cache = Cache(app,config={'CACHE_TYPE': 'simple'})
