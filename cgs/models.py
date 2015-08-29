@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+import arrow
 
 from app import db
+
 
 class Users(db.Model):
     """用户"""
@@ -11,8 +12,8 @@ class Users(db.Model):
     username = db.Column(db.String(20), index=True)
     password = db.Column(db.String(128))
     scope = db.Column(db.String(128), default='')
-    date_created = db.Column(db.DateTime, default=datetime.now())
-    date_modified = db.Column(db.DateTime, default=datetime.now())
+    date_created = db.Column(db.DateTime, default=arrow.now().datetime)
+    date_modified = db.Column(db.DateTime, default=arrow.now().datetime)
     banned = db.Column(db.Integer, default=0)
 
     def __init__(self, username, password, scope='', banned=0,
@@ -20,8 +21,11 @@ class Users(db.Model):
         self.username = username
         self.password = password
         self.scope = scope
-        self.date_created = datetime.now()
-        self.date_modified = datetime.now()
+        now = arrow.now().datetime
+        if not date_created:
+            self.date_created = now
+        if not date_modified:
+            self.date_modified = now
         self.banned = banned
 
     def __repr__(self):
