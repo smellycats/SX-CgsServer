@@ -29,4 +29,4 @@ limiter.header_mapping = {
     HEADERS.REMAINING: "X-RateLimit-Remaining"
 }
 
-cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
