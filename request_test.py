@@ -24,7 +24,7 @@ def user_test():
     auth = HTTPBasicAuth('admin', 'showmethemoney')
     headers = {'content-type': 'application/json'}
     url = 'http://127.0.0.1:8098/user'
-    data = {'username': 'fire19', 'password': 'show me the money',
+    data = {'username': 'fire4', 'password': 'showmethemoney',
             'scope': 'vehicle'}
     r = requests.post(url, headers=headers,data=json.dumps(data),auth=auth)
 
@@ -34,7 +34,7 @@ def token_test():
     #auth = HTTPBasicAuth('admin','gdsx27677221')
     headers = {'content-type': 'application/json'}
     url = 'http://127.0.0.1:8098/token'
-    data = {'username': 'admin', 'password': 'showmethemoney'}
+    data = {'username': 'test1', 'password': 'test12345'}
     r = requests.post(url, headers=headers, data=json.dumps(data))
 
     return r
@@ -46,10 +46,10 @@ def vehicle_test():
     r = requests.get(url, headers=headers)
     return r
 
-def user_get():
+def user_get(token):
     url = 'http://localhost:8098/user/1'
     headers = {'content-type': 'application/json',
-               'access_token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0MDc5NDY0NCwiaWF0IjoxNDQwNzkxMDQ0fQ.eyJzY29wZSI6WyJhbGwiXSwidWlkIjoxfQ.XLC4POsheL3MSUnxyKiMgzytcCSZ_1YV1PPTk8pVad8'}
+               'access_token': token}
     r = requests.get(url, headers=headers)
     return r
 
@@ -57,7 +57,7 @@ def user_post():
     headers = {'content-type': 'application/json',
                'access_token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0MDc5NDY0NCwiaWF0IjoxNDQwNzkxMDQ0fQ.eyJzY29wZSI6WyJhbGwiXSwidWlkIjoxfQ.XLC4POsheL3MSUnxyKiMgzytcCSZ_1YV1PPTk8pVad8'}
     url = 'http://127.0.0.1:8098/user'
-    data = {'username': 'fire20', 'password': 'test12345', 'scope': 'scope_get'}
+    data = {'username': 'test2', 'password': 'test12345', 'scope': 'all'}
     r = requests.post(url, headers=headers,data=json.dumps(data))
 
     return r
@@ -71,17 +71,26 @@ def user_put():
 
     return r
 
-def scope_get():
-    url = 'http://localhost:8098/scope'
+def scope_get(token):
+    url = 'http://localhost:8098/scope/'
     headers = {'content-type': 'application/json',
-               'access_token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0MDc4MTM4MCwiaWF0IjoxNDQwNzc3NzgwfQ.eyJzY29wZSI6bnVsbCwidWlkIjo0fQ.HGqB_ZC9RG8L28sD4adhCZ1iFh5Q8V0mNgdY42Ol80I'}
+               'access_token': token}
+    r = requests.get(url, headers=headers)
+    return r
+
+def hzhbc_get(token):
+    hphm = 'LC6879'
+    hpzl = '02'
+    url = 'http://localhost:8098/hzhbc/%s/%s' % (hphm, hpzl)
+    headers = {'content-type': 'application/json',
+               'access_token': token}
     r = requests.get(url, headers=headers)
     return r
 
 if __name__ == '__main__':  # pragma nocover
-    r = user_put()
+    token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0MTcyOTc0MCwiaWF0IjoxNDQxNzI2MTQwfQ.eyJzY29wZSI6WyJzY29wZV9nZXQiLCJoemhiY19nZXQiXSwidWlkIjoyM30.1FDuBc2SVrwu5pYzTH71ZPi8ONEuWxR58s0FVhzKCB0'
+    r = hzhbc_get(token)
     #r = scope_get()
     print r.headers
-    #r = auth_test(url)
     print r.status_code
     print r.text
