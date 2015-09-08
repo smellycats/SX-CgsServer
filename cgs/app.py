@@ -21,6 +21,7 @@ db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
 
 logger = logging.getLogger('root')
+access_logger = logging.getLogger('access')
 
 limiter = Limiter(app, headers_enabled=True, global_limits=["10/minute"])
 limiter.header_mapping = {
