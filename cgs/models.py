@@ -106,3 +106,37 @@ class VehicleGD(db.Model):
     def __repr__(self):
         return '<VehicleGD %r>' % self.id
 
+
+class Hbc_all(db.Model):
+    __bind_key__ = 'hbc'
+    __tablename__ = 'hbc_all'
+    #id = db.Column(db.Integer, primary_key=True)
+    nxh = db.Column(db.String(32), primary_key=True)
+    hphm = db.Column(db.String(32))
+    hpzl = db.Column(db.String(4))
+
+    def __init__(self, nxh, hphm, hpzl):
+        self.nxh = nxh
+        self.hphm = hphm
+        self.hpzl = hpzl
+
+    def __repr__(self):
+        return '<Hbc_all %r>' % self.nxh
+
+
+class HZ_vehicle(db.Model):
+    __bind_key__ = 'hbc'
+    __tablename__ = 'hz_vehicle'
+    id = db.Column(db.Integer, primary_key=True)
+    xh = db.Column(db.String(32))
+    hphm = db.Column(db.String(32))
+    hpzl = db.Column(db.String(4))
+
+    def __init__(self, xh, hphm, hpzl):
+        self.xh = xh
+        self.hphm = hphm
+        self.hpzl = hpzl
+
+    def __repr__(self):
+        return '<HZ_vehicle %r>' % self.xh
+
