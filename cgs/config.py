@@ -3,7 +3,7 @@ import os
 
 
 class Config(object):
-    # 密码
+    # 密码 string
     SECRET_KEY = 'hellokitty'
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
     # 主机IP string
@@ -14,13 +14,17 @@ class Config(object):
     ROUNDS = 123456
     # token生存周期，默认1小时 int
     EXPIRES = 3600
-
+    # 数据库连接 string
     SQLALCHEMY_DATABASE_URI = 'sqlite:///../cgs.db'
+    # 数据库连接 dict
     SQLALCHEMY_BINDS = {
-        'cgs': 'mysql://root:root@localhost/cgs'
+        'cgs': 'mysql://root:root@localhost/cgs',
+        'hbc': 'oracle://kakou:kakou@192.168.1.104:1521/kakou'
     }
     # 用户权限范围 dict
     SCOPE_USER = {}
+    # 白名单启用 bool
+    WHITE_LIST_OPEN = True
     # 白名单列表 set
     WHITE_LIST = set(['127.0.0.1'])
 
