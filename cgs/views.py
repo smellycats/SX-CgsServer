@@ -9,16 +9,26 @@ from flask_restful import reqparse, abort, Resource
 from passlib.hash import sha256_crypt
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
-from app import db, app, api, auth, limiter, logger, cache
-from models import Users, VehicleGD, Scope
+from app import db, app, api, auth, limiter, cache, logger, access_logger
+from models import Users, Scope, VehicleGD, Hbc_all, HZ_vehicle
 from help_func import *
 
 
+@app.after_request
+def after_request(response):
+    """访问信息写入日志"""
+    access_logger.info('%s - - [%s] "%s %s HTTP/1.1" %s %s'
+                       % (request.remote_addr,
+                          arrow.now().format('DD/MMM/YYYY:HH:mm:ss ZZ'),
+                          request.method, request.path, response.status_code,
+                          response.content_length))
+    return response
+
 def verify_addr(f):
-    """token验证装饰器"""
+    """IP地址白名单"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if request.remote_addr in app.config['WHITE_LIST']:
+        if not app.config['WHITE_LIST_OPEN'] or request.remote_addr in app.config['WHITE_LIST']:
             pass
         else:
             return {'status': '403.6',
@@ -42,27 +52,18 @@ def verify_token(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not request.headers.get('Access-Token'):
-            return {'error': 'access_token error'}, 401
+            return {'status': '401.6', 'message': 'missing token header'}, 401
         token_result = verify_auth_token(request.headers['Access-Token'],
                                          app.config['SECRET_KEY'])
         if not token_result:
-            return {'error': 'access_token invalid'}, 401
+            return {'status': '401.7', 'message': 'invalid token'}, 401
         elif token_result == 'expired':
-            return {'error': 'access_token expired'}, 401
+            return {'status': '401.8', 'message': 'token expired'}, 401
         g.uid = token_result['uid']
         g.scope = set(token_result['scope'])
 
         return f(*args, **kwargs)
     return decorated_function
-
-def verify_scope2(scope):
-    print scope
-    print g.scope
-    if scope == 'all' or scope in g.scope:
-        pass
-    else:
-        #print '405'
-        return {'status': 405, 'error': 'Method Not Allowed'}, 405
 
 def verify_scope(f):
     """token验证装饰器"""
@@ -81,7 +82,7 @@ def verify_scope(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@cache.memoize(50)
+@cache.memoize(3600)
 def get_vehicle(hphm='', hpys=None):
     vehicle = VehicleGD.query.filter_by(hphm=hphm)
     if hpys:
@@ -99,26 +100,12 @@ def get_vehicle(hphm='', hpys=None):
         vehicle = VehicleGD.query.filter(VehicleGD.hpzl.in_(hpzl))
     return vehicle.all()
 
-def host_scope():
-    return request.host
+@cache.memoize(3600)
+def get_hbc(hphm='', hpzl='00'):
+    v = HZ_vehicle.query.outerjoin(Hbc_all, HZ_vehicle.xh==Hbc_all.nxh).filter(HZ_vehicle.hphm==hphm, HZ_vehicle.hphm==Hbc_all.hphm, HZ_vehicle.hpzl==hpzl).first()
 
-@cache.memoize(60)
-def get_scope(uid):
-    vehicle = VehicleGD.query.filter_by(hphm=hphm)
-    if hpys:
-        hpzl = []
-        if hpys in set([u'blue', u'蓝', u'2']):
-            hpzl = ('02', '08')
-        elif hpys in set([u'yellow', u'黄', u'3']):
-            hpzl = ('01', '07', '13', '14', '15', '16', '17')
-        elif hpys in set([u'white',u'白',u'4']):
-            hpzl = ('20', '21', '22', '24', '32')
-        elif hpys in set([u'black',u'黑',u'5']):
-            hpzl = ('03', '04', '05', '06', '09', '10', '11', '12')
-        else:
-            hpzl = ()
-        vehicle = VehicleGD.query.filter(VehicleGD.hpzl.in_(hpzl))
-    return vehicle.all()
+    return v
+
 
 class Index(Resource):
 
@@ -128,7 +115,8 @@ class Index(Resource):
             'user_url': 'http://%s:%s/user{/user_id}' % (request.remote_addr, app.config['PORT']),
             'scope_url': 'http://%s:%s/scope' % (request.remote_addr, app.config['PORT']),
             'token_url': 'http://%s:%s/token' % (request.remote_addr, app.config['PORT']),
-            'vehicle_url': 'http://%s:%s/vehicle' % (request.remote_addr, app.config['PORT'])
+            'vehicle_url': 'http://%s:%s/vehicle' % (request.remote_addr, app.config['PORT']),
+            'hzhbc_url': 'http://%s:%s/hzhbc/:hphm/:hpzl' % (request.remote_addr, app.config['PORT'])
         }, 200, {'Cache-Control': 'public, max-age=60, s-maxage=60'}
 
 
@@ -138,7 +126,6 @@ class User(Resource):
     @verify_addr
     @verify_scope
     def get(self, user_id):
-        #verify_scope('user_get')
         user = Users.query.filter_by(id=user_id, banned=0).first()
         if user:
             return {'id': user.id,
@@ -151,6 +138,7 @@ class User(Resource):
             return {}, 404
 
     @verify_addr
+    @verify_scope
     def put(self, user_id):
         verify_scope('user_put')
         parser = reqparse.RequestParser()
@@ -188,6 +176,7 @@ class UserList(Resource):
     decorators = [verify_token, limiter.limit("50/minute")]
 
     @verify_addr
+    @verify_scope
     def post(self):
         verify_scope('user_post')
         if not request.json.get('username', None):
@@ -234,8 +223,6 @@ class ScopeList(Resource):
     @verify_token
     @verify_scope
     def get(self):
-        #verify_scope('scope_get')
-        print request.path
         scope = Scope.query.all()
         items = []
         for i in scope:
@@ -257,7 +244,6 @@ def get_uid():
 class TokenList(Resource):
     decorators = [limiter.limit("5/hour", get_uid), verify_addr]
 
-    @verify_scope
     def post(self):
         #verify_scope('token_post')
         if not request.json.get('username', None):
@@ -268,13 +254,11 @@ class TokenList(Resource):
             error = {'resource': 'Token', 'field': 'username',
                      'code': 'missing_field'}
             return {'message': 'Validation Failed', 'errors': error}, 422
-        print 'post2'
         if g.uid == -1:
-            return {'error': 'username or password error'}, 422
+            return {'message': 'username or password error'}, 422
         s = Serializer(app.config['SECRET_KEY'],
                        expires_in=app.config['EXPIRES'])
-        token = s.dumps({'uid': g.uid,
-                         'scope': g.scope.split(',')})
+        token = s.dumps({'uid': g.uid, 'scope': g.scope.split(',')})
         return {'uid': g.uid,
                 'access_token': token,
                 'token_type': 'self',
@@ -282,26 +266,14 @@ class TokenList(Resource):
                 'expires_in': app.config['EXPIRES']}, 201,
         {'Cache-Control': 'no-store', 'Pragma': 'no-cache'}
 
-def get_uid_from_token(f):
-    """token验证装饰器"""
-    if not request.headers.get('Access-Token'):
-        g.uid = -1
-        g.scope = set()
-    else:
-        token_result = verify_auth_token(request.headers['Access-Token'],
-                                         app.config['SECRET_KEY'])
-        g.uid = token_result['uid']
-        g.scope = set(token_result['scope'])
-    return str(g.uid)
-
 
 class Vehicle(Resource):
     decorators = [limiter.limit("500/minute")]
 
     @verify_addr
     @verify_token
+    #@verify_scope
     def get(self):
-        verify_scope('vehicle_get')
         parse_result = urlparse.urlparse(request.url)
         query = urllib.unquote(parse_result.query)
         get_params = url_decode(query)
@@ -324,9 +296,28 @@ class Vehicle(Resource):
         {'Cache-Control': 'public, max-age=60, s-maxage=60'}
 
 
+class HZHbc(Resource):
+    decorators = [limiter.limit("6000/minute")]
+
+    @verify_addr
+    @verify_token
+    #@verify_scope
+    def get(self, hphm, hpzl):
+        try:
+            hbc = get_hbc(hphm, hpzl)
+            item = {}
+            if hbc:
+                item = row2dict(hbc)
+        except Exception as e:
+            print (e)
+        return item, 200,
+        {'Cache-Control': 'public, max-age=60, s-maxage=60'}
+
+
 api.add_resource(Index, '/')
 api.add_resource(User, '/user/<int:user_id>')
 api.add_resource(UserList, '/user')
 api.add_resource(ScopeList, '/scope')
 api.add_resource(TokenList, '/token')
 api.add_resource(Vehicle, '/vehicle')
+api.add_resource(HZHbc, '/hzhbc/<string:hphm>/<string:hpzl>')
