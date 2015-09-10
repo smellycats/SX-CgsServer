@@ -69,12 +69,10 @@ def verify_scope(f):
     """token验证装饰器"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        print 'scope'
         try:
             scope = '_'.join([request.path[1:], request.method.lower()])
-            print scope
         except Exception as e:
-            print (e)
+            logger.error(e)
         if 'all' in g.scope or scope in g.scope:
             pass
         else:
@@ -110,7 +108,6 @@ def get_hbc(hphm='', hpzl='00'):
 class Index(Resource):
 
     def get(self):
-        help(request)
         return {
             'user_url': 'http://%s:%s/user{/user_id}' % (request.remote_addr, app.config['PORT']),
             'scope_url': 'http://%s:%s/scope' % (request.remote_addr, app.config['PORT']),
