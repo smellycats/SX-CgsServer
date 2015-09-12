@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 from cgs import db
-from cgs.models import Users, Scope, VehicleGD, Hbc_all, HZ_vehicle
+from cgs.models import Users, Scope, VehicleGD, HbcAll, HZVehicle
 
 def hbcall_test():
-    hbc = Hbc_all.query.first()
+    hbc = HbcAll.query.first()
     
     print hbc
 
 def vehicle_test():
-    v = HZ_vehicle.query.first()
+    v = HZVehicle.query.first()
     
     print v
 
 def join_test(hphm, hpzl):
-    v = HZ_vehicle.query.outerjoin(Hbc_all, HZ_vehicle.xh==Hbc_all.nxh).filter(HZ_vehicle.hphm==hphm, HZ_vehicle.hphm==Hbc_all.hphm, HZ_vehicle.hpzl==hpzl).first()
+    v = HZVehicle.query.outerjoin(HbcAll, HZVehicle.xh==HbcAll.nxh).filter(HZVehicle.hphm==hphm, HZVehicle.hphm==HbcAll.hphm, HZVehicle.hpzl==hpzl).first()
     
     print v
 
