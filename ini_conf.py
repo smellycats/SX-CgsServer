@@ -1,50 +1,41 @@
 #-*- encoding: utf-8 -*-
 import ConfigParser
 
+
 class MyIni:
-    def __init__(self, confpath = 'my_ini.conf'):
+
+    def __init__(self, conf_path='my_ini.conf'):
+        self.conf_path = conf_path
         self.cf = ConfigParser.ConfigParser()
-        self.cf.read(confpath)
-    
-    def get_kakou(self):
+        self.cf.read(conf_path)
+
+    def get_sys(self):
         conf = {}
-        conf['host']     = self.cf.get('KAKOU', 'host')
-        conf['port']     = self.cf.getint('KAKOU', 'port')
-        conf['user']     = self.cf.get('KAKOU', 'user')
-        conf['password'] = self.cf.get('KAKOU', 'password')
-        return conf
-    
-    def get_hbc(self):
-        conf = {}
-        conf['host']     = self.cf.get('HBC', 'host')
-        conf['port']     = self.cf.getint('HBC', 'port')
-        conf['user']     = self.cf.get('HBC', 'user')
-        conf['password'] = self.cf.get('HBC', 'password')
+        section = 'SYS'
+        conf['secret_key'] = self.cf.get(section, 'secret_key')
+        conf['expires'] = self.cf.getint(section, 'expires')
+        conf['white_list_open'] = self.cf.getboolean(section, 'white_list_open')
+        conf['white_list'] = self.cf.get(section, 'white_list')
+        conf['host'] = self.cf.get(section, 'host')
+        conf['port'] = self.cf.getint(section, 'port')
         return conf
 
-    def get_mysql(self):
+    def get_hzhbc(self):
         conf = {}
-        conf['host']     = self.cf.get('MYSQLSET','host')
-        conf['port']     = self.cf.getint('MYSQLSET','port')
-        conf['user']     = self.cf.get('MYSQLSET','user')
-        conf['password'] = self.cf.get('MYSQLSET','password')
-        conf['db']       = self.cf.get('MYSQLSET','db')
+        section = 'HZHBC'
+        conf['sid'] = self.cf.get(section, 'sid')
+        conf['host'] = self.cf.get(section, 'host')
+        conf['port'] = self.cf.getint(section, 'port')
+        conf['username'] = self.cf.get(section, 'username')
+        conf['password'] = self.cf.get(section, 'password')
         return conf
 
-    def get_syst(self):
+    def get_gdvehicle(self):
         conf = {}
-        conf['id_flag'] = self.cf.getint('SYSTSET','id_flag')
-        conf['imgpath'] = self.cf.get('SYSTSET','imgpath')
+        section = 'GDVEHICLE'
+        conf['db'] = self.cf.get(section, 'db')
+        conf['host'] = self.cf.get(section, 'host')
+        conf['port'] = self.cf.getint(section, 'port')
+        conf['username'] = self.cf.get(section, 'username')
+        conf['password'] = self.cf.get(section, 'password')
         return conf
-
- 
-if __name__ == "__main__":
-    try:
-        hbcini = Hbc_ini()
-        print hbcini.getHzkk()
-        #s = imgIni.getPlateInfo(PATH2)
-
-    except ConfigParser.NoOptionError,e:
-        print e
-        time.sleep(10)
-
