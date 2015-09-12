@@ -29,7 +29,7 @@ def verify_addr(f):
     """IP地址白名单"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not app.config['WHITE_LIST_OPEN'] or request.remote_addr in app.config['WHITE_LIST']:
+        if not app.config['WHITE_LIST_OPEN'] or request.remote_addr == '127.0.0.1' or request.remote_addr in app.config['WHITE_LIST']:
             pass
         else:
             return {'status': '403.6',
