@@ -10,7 +10,7 @@ from passlib.hash import sha256_crypt
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from app import db, app, api, auth, limiter, cache, logger, access_logger
-from models import Users, Scope, VehicleGD, Hbc_all, HZ_vehicle
+from models import Users, Scope, VehicleGD, HbcAll, HZVehicle
 from help_func import *
 
 
@@ -24,6 +24,7 @@ def after_request(response):
                           response.content_length))
     return response
 
+
 def verify_addr(f):
     """IP地址白名单"""
     @wraps(f)
@@ -35,6 +36,7 @@ def verify_addr(f):
                     'error': u'禁止访问:客户端的 IP 地址被拒绝'}, 403
         return f(*args, **kwargs)
     return decorated_function
+
 
 @auth.verify_password
 def verify_password(username, password):
@@ -65,6 +67,7 @@ def verify_token(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 def verify_scope(f):
     """token验证装饰器"""
     @wraps(f)
@@ -80,6 +83,7 @@ def verify_scope(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 @cache.memoize(3600)
 def get_vehicle(hphm='', hpys=None):
     vehicle = VehicleGD.query.filter_by(hphm=hphm)
@@ -89,18 +93,21 @@ def get_vehicle(hphm='', hpys=None):
             hpzl = ('02', '08')
         elif hpys in set([u'yellow', u'黄', u'3']):
             hpzl = ('01', '07', '13', '14', '15', '16', '17')
-        elif hpys in set([u'white',u'白',u'4']):
+        elif hpys in set([u'white', u'白', u'4']):
             hpzl = ('20', '21', '22', '24', '32')
-        elif hpys in set([u'black',u'黑',u'5']):
+        elif hpys in set([u'black', u'黑', u'5']):
             hpzl = ('03', '04', '05', '06', '09', '10', '11', '12')
         else:
             hpzl = ()
         vehicle = VehicleGD.query.filter(VehicleGD.hpzl.in_(hpzl))
     return vehicle.all()
 
+
 @cache.memoize(3600)
 def get_hbc(hphm='', hpzl='00'):
-    v = HZ_vehicle.query.outerjoin(Hbc_all, HZ_vehicle.xh==Hbc_all.nxh).filter(HZ_vehicle.hphm==hphm, HZ_vehicle.hphm==Hbc_all.hphm, HZ_vehicle.hpzl==hpzl).first()
+    v = HZVehicle.query.outerjoin(HbcAll, HZVehicle.xh == Hbc_all.nxh).filter(
+        HZVehicle.hphm == hphm, HZVehicle.hphm == HbcAll.hphm,
+        HZVehicle.hpzl == hpzl).first()
 
     return v
 
@@ -153,7 +160,8 @@ class User(Resource):
         # 求交集后的权限
         u_scope = ','.join(all_scope & request_scope)
 
-        db.session.query(Users).filter_by(id=user_id).update({'scope': u_scope, 'date_modified': arrow.now().datetime})
+        db.session.query(Users).filter_by(id=user_id).update(
+            {'scope': u_scope, 'date_modified': arrow.now().datetime})
         db.session.commit()
 
         user = Users.query.filter_by(id=user_id).first()
@@ -242,7 +250,7 @@ class TokenList(Resource):
     decorators = [limiter.limit("5/hour", get_uid), verify_addr]
 
     def post(self):
-        #verify_scope('token_post')
+        # verify_scope('token_post')
         if not request.json.get('username', None):
             error = {'resource': 'Token', 'field': 'username',
                      'code': 'missing_field'}
@@ -269,7 +277,7 @@ class Vehicle(Resource):
 
     @verify_addr
     @verify_token
-    #@verify_scope
+    # @verify_scope
     def get(self):
         parse_result = urlparse.urlparse(request.url)
         query = urllib.unquote(parse_result.query)
@@ -298,7 +306,7 @@ class HZHbc(Resource):
 
     @verify_addr
     @verify_token
-    #@verify_scope
+    # @verify_scope
     def get(self, hphm, hpzl):
         try:
             hbc = get_hbc(hphm, hpzl)
@@ -306,9 +314,8 @@ class HZHbc(Resource):
             if hbc:
                 item = row2dict(hbc)
         except Exception as e:
-            print (e)
-        return item, 200,
-        {'Cache-Control': 'public, max-age=60, s-maxage=60'}
+            logger.error(e)
+        return item, 200, {'Cache-Control': 'public, max-age=60, s-maxage=60'}
 
 
 api.add_resource(Index, '/')
