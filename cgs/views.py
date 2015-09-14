@@ -315,7 +315,27 @@ class HZHbc(Resource):
                 item = row2dict(hbc)
         except Exception as e:
             logger.error(e)
+            raise
         return item, 200, {'Cache-Control': 'public, max-age=60, s-maxage=60'}
+
+
+class HZHbcList(Resource):
+    decorators = [limiter.limit("60/minute")]
+
+    @verify_addr
+    @verify_token
+    # @verify_scope
+    def get(self):
+        items = []
+        try:
+            hbc = HbcAll.query.join(HZVehicle, HZVehicle.xh == HbcAll.nxh).filter(HZVehicle.hphm == HbcAll.hphm).all()
+            for i in hbc:
+                items.append({'hphm': i.hphm, 'hpzl': i.hpzl})
+        except Exception as e:
+            logger.error(e)
+            raise
+        return {'total_count': len(items), 'items': items}, 200,
+        {'Cache-Control': 'public, max-age=60, s-maxage=60'}
 
 
 api.add_resource(Index, '/')
@@ -325,3 +345,4 @@ api.add_resource(ScopeList, '/scope')
 api.add_resource(TokenList, '/token')
 api.add_resource(Vehicle, '/vehicle')
 api.add_resource(HZHbc, '/hzhbc/<string:hphm>/<string:hpzl>')
+api.add_resource(HZHbcList, '/hzhbc')
