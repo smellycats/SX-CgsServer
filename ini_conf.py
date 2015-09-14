@@ -23,7 +23,7 @@ class MyIni:
     def get_hzhbc(self):
         conf = {}
         section = 'HZHBC'
-        conf['sid'] = self.cf.get(section, 'sid')
+        conf['db'] = self.cf.get(section, 'db')
         conf['host'] = self.cf.get(section, 'host')
         conf['port'] = self.cf.getint(section, 'port')
         conf['username'] = self.cf.get(section, 'username')

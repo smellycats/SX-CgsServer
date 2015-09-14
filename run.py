@@ -17,10 +17,9 @@ if __name__ == '__main__':
         'cgs': 'mysql://%s:%s@%s:%s/%s' % (v_ini['username'], v_ini['password'],
                                            v_ini['host'], v_ini['port'],
                                            v_ini['db']),
-        'hbc': 'oracle://%s:%s@%s:%s/%s' % (h_ini['username'],
-                                            h_ini['password'],
-                                            h_ini['host'], h_ini['port'],
-                                            h_ini['sid'])
+        'hbc': 'mysql://%s:%s@%s:%s/%s' % (h_ini['username'], h_ini['password'],
+                                           h_ini['host'], h_ini['port'],
+                                           h_ini['db'])
     }
 
     app.run(host='0.0.0.0', port=8098, threaded=True)

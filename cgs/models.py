@@ -110,10 +110,10 @@ class VehicleGD(db.Model):
 class HbcAll(db.Model):
     __bind_key__ = 'hbc'
     __tablename__ = 'hbc_all'
-    # id = db.Column(db.Integer, primary_key=True)
-    nxh = db.Column(db.String(32), primary_key=True)
-    hphm = db.Column(db.String(32))
-    hpzl = db.Column(db.String(4))
+    id = db.Column(db.Integer, primary_key=True)
+    nxh = db.Column(db.String(32))
+    hphm = db.Column(db.String(16))
+    hpzl = db.Column(db.String(2))
 
     def __init__(self, nxh, hphm, hpzl):
         self.nxh = nxh
@@ -129,8 +129,8 @@ class HZVehicle(db.Model):
     __tablename__ = 'hz_vehicle'
     id = db.Column(db.Integer, primary_key=True)
     xh = db.Column(db.String(32))
-    hphm = db.Column(db.String(32))
-    hpzl = db.Column(db.String(4))
+    hphm = db.Column(db.String(16))
+    hpzl = db.Column(db.String(2))
 
     def __init__(self, xh, hphm, hpzl):
         self.xh = xh
