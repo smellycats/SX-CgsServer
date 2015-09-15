@@ -18,8 +18,8 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///../cgs.db'
     # 数据库连接 dict
     SQLALCHEMY_BINDS = {
-        'cgs': 'mysql://root:root@localhost/cgs',
-        'hbc': 'oracle://kakou:kakou@192.168.1.104:1521/kakou'
+        'cgs': 'mysql://root:123456@192.168.1.29/cgs',
+        'hbc': 'mysql://root:123456@192.168.1.29:3306/hbc'
     }
     # 用户权限范围 dict
     SCOPE_USER = {}

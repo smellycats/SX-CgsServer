@@ -20,5 +20,6 @@ def join_test(hphm, hpzl):
 if __name__ == "__main__":
     #hbcall_test()
     #vehicle_test()
-    join_test(u'LC6879', '02')
+    #join_test(u'LC6879', '02')
+    hbcall_test()
                             
