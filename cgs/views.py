@@ -105,7 +105,7 @@ def get_vehicle(hphm='', hpys=None):
 
 @cache.memoize(3600)
 def get_hbc(hphm='', hpzl='00'):
-    v = HZVehicle.query.outerjoin(HbcAll, HZVehicle.xh == Hbc_all.nxh).filter(
+    v = HZVehicle.query.outerjoin(HbcAll, HZVehicle.xh == HbcAll.nxh).filter(
         HZVehicle.hphm == hphm, HZVehicle.hphm == HbcAll.hphm,
         HZVehicle.hpzl == hpzl).first()
 
