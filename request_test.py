@@ -33,7 +33,7 @@ def user_test():
 def token_test():
     #auth = HTTPBasicAuth('admin','gdsx27677221')
     headers = {'content-type': 'application/json'}
-    url = 'http://127.0.0.1:5000/token'
+    url = 'http://192.168.1.29:8081/token'
     data = {'username': 'test1', 'password': 'test12345'}
     r = requests.post(url, headers=headers, data=json.dumps(data))
 
@@ -81,7 +81,7 @@ def scope_get(token):
 def hzhbc_get(token):
     hphm = 'LC6879'
     hpzl = '02'
-    url = 'http://localhost:5000/hzhbc/%s/%s' % (hphm, hpzl)
+    url = 'http://192.168.1.29:8081/hzhbc/%s/%s' % (hphm, hpzl)
     headers = {'content-type': 'application/json',
                'access_token': token}
     r = requests.get(url, headers=headers)
@@ -94,9 +94,9 @@ def hzhbcall_get(token):
     return requests.get(url, headers=headers)
 
 if __name__ == '__main__':  # pragma nocover
-    token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0MjI0Mjk3MywiaWF0IjoxNDQyMjM1NzczfQ.eyJzY29wZSI6WyJzY29wZV9nZXQiLCJoemhiY19nZXQiXSwidWlkIjoyM30.0LC44MUvtXgqWC_3O1q94od6QAdRnJMo-tdPfANyskY'
+    token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0MjMwMDQ0NywiaWF0IjoxNDQyMjk2ODQ3fQ.eyJzY29wZSI6WyJzY29wZV9nZXQiLCJoemhiY19nZXQiXSwidWlkIjoyM30.XDQGr_mSGCiVFdvYrO7H5RB7CXvfM6APhp3KXlTUeAk'
     #r = token_test()
-    r = hzhbcall_get(token)
+    r = hzhbc_get(token)
     #r = scope_get()
     print r.headers
     print r.status_code

@@ -92,5 +92,5 @@ if __name__ == '__main__':
     #users_test()
     #scope_get()
     #scope_set()
-    user_add()
+    users_get()
 
