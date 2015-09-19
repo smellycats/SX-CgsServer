@@ -20,19 +20,9 @@ class MyIni:
         conf['port'] = self.cf.getint(section, 'port')
         return conf
 
-    def get_hzhbc(self):
+    def get_cgs(self):
         conf = {}
-        section = 'HZHBC'
-        conf['db'] = self.cf.get(section, 'db')
-        conf['host'] = self.cf.get(section, 'host')
-        conf['port'] = self.cf.getint(section, 'port')
-        conf['username'] = self.cf.get(section, 'username')
-        conf['password'] = self.cf.get(section, 'password')
-        return conf
-
-    def get_gdvehicle(self):
-        conf = {}
-        section = 'GDVEHICLE'
+        section = 'CGS'
         conf['db'] = self.cf.get(section, 'db')
         conf['host'] = self.cf.get(section, 'host')
         conf['port'] = self.cf.getint(section, 'port')
