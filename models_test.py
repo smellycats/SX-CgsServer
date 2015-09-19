@@ -1,25 +1,32 @@
-# -*- coding: utf-8 -*-
-from cgs import db
-from cgs.models import Users, Scope, VehicleGD, HbcAll, HZVehicle
+#import cgs
 
-def hbcall_test():
-    hbc = HbcAll.query.first()
-    
-    print hbc
+from cgs.models import Users, Scope, GDVehicle, HbcAll, HZVehicle
 
-def vehicle_test():
-    v = HZVehicle.query.first()
-    
-    print v
+def user_get():
+    user = Users.query.all()
+    for i in user:
+        print i.username
 
-def join_test(hphm, hpzl):
-    v = HZVehicle.query.outerjoin(HbcAll, HZVehicle.xh==HbcAll.nxh).filter(HZVehicle.hphm==hphm, HZVehicle.hphm==HbcAll.hphm, HZVehicle.hpzl==hpzl).first()
-    
-    print v
+def scope_get():
+    s = Scope.query.all()
+    for i in s:
+        print i.name
+
+def gdvehicle_get():
+    s = GDVehicle.query.first()
+    print s.hphm,s.hpzl
+
+def hbcall_get():
+    h = HbcAll.query.first()
+    print h.hphm
+
+def hzvehicle_get():
+    h = HZVehicle.query.first()
+    print h.hphm
 
 if __name__ == "__main__":
-    #hbcall_test()
-    #vehicle_test()
-    #join_test(u'LC6879', '02')
-    hbcall_test()
-                            
+    user_get()
+    scope_get()
+    gdvehicle_get()
+    hbcall_get()
+    hzvehicle_get()
