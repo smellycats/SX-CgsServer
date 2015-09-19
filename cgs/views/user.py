@@ -93,7 +93,7 @@ def user_post():
     else:
         return {'error': 'username is already esist'}, 422
 
-@blueprint.route('/<int:user_id>', methods=['PUT'])
+@blueprint.route('/<int:user_id>', methods=['POST', 'PATCH'])
 @limiter.limit("60/minute")
 def user_put(user_id):
     try:
@@ -136,28 +136,5 @@ def scope_get():
     for i in scope:
         items.append({'id': i.id, 'name': i.name})
     return jsonify({'total_count': len(items), 'items': items}), 200
-
-@blueprint.route('/token')
-def post(self):
-    # verify_scope('token_post')
-    if not request.json.get('username', None):
-        error = {'resource': 'Token', 'field': 'username',
-                 'code': 'missing_field'}
-        return {'message': 'Validation Failed', 'errors': error}, 422
-    if not request.json.get('password', None):
-        error = {'resource': 'Token', 'field': 'username',
-                 'code': 'missing_field'}
-        return {'message': 'Validation Failed', 'errors': error}, 422
-    if g.uid == -1:
-        return {'message': 'username or password error'}, 422
-    s = Serializer(app.config['SECRET_KEY'],
-                   expires_in=app.config['EXPIRES'])
-    token = s.dumps({'uid': g.uid, 'scope': g.scope.split(',')})
-    return {'uid': g.uid,
-            'access_token': token,
-            'token_type': 'self',
-            'scope': g.scope,
-            'expires_in': app.config['EXPIRES']}, 201,
-    {'Cache-Control': 'no-store', 'Pragma': 'no-cache'}
 
 
