@@ -5,7 +5,6 @@ Flask-SQLAlchemy>=2.0
 Flask-Limiter>=0.8.1
 Flask-Cache>=0.13.1
 MySQL-python>=1.2.5
-cx_Oracle>=5.2
 arrow>=0.5.4
 requests>=2.5.0
 itsdangerous>=0.2.4
