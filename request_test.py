@@ -85,30 +85,27 @@ def hzhbc_get(token):
     hphm = 'LC6879'
     hpzl = '02'
     url = 'http://192.168.1.29:8081/hzhbc/%s/%s' % (hphm, hpzl)
-    headers = {'content-type': 'application/json',
-               'access_token': token}
+    headers = {'content-type': 'application/json', 'access_token': token}
     r = requests.get(url, headers=headers)
     return r
 
 def hzhbcall_get(token):
     url = 'http://%s:%s/hzhbc' % (IP, PORT)
-    headers = {'content-type': 'application/json',
-               'access_token': token}
+    headers = {'content-type': 'application/json', 'access_token': token}
     return requests.get(url, headers=headers)
 
 def gdvehicle_get(token):
     url = 'http://%s:%s/gdvehicle/粤WJV023/blue' % (IP, PORT)
-    headers = {'content-type': 'application/json',
-               'access_token': token}
+    headers = {'content-type': 'application/json', 'access_token': token}
     return requests.get(url, headers=headers)
 
 if __name__ == '__main__':  # pragma nocover
-    token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0MjY4MjQ2MiwiaWF0IjoxNDQyNjc4ODYyfQ.eyJzY29wZSI6WyJzY29wZV9nZXQiLCJoemhiY19nZXQiXSwidWlkIjoyM30.4hXUQn5v37Ujl-IF60nXEONtqQftXFPfGOSYF14K9VY'
-    #r = token_test()
-    #r = hzhbcall_get(token)
-    r = gdvehicle_get(token)
+    token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0Mjk1MjY1MCwiaWF0IjoxNDQyOTQ1NDUwfQ.eyJzY29wZSI6WyJnZHZlaGljbGVfZ2V0IiwiaHpoYmNfZ2V0Il0sInVpZCI6Mn0.UcuOOUusLVmpawjPH8RPKDqfoAQSMFxfKZoX7Mqtyas'
+    r = token_test()
+    r = hzhbcall_get(token)
+    #r = gdvehicle_get(token)
     #r = scope_get()
     print r.headers
     print r.status_code
-    print r.text
+    #print r.text
     #print r.text[:20]
