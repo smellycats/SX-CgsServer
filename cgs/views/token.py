@@ -23,17 +23,6 @@ def verify_addr(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@app.after_request
-def after_request(response):
-    """访问信息写入日志"""
-    access_logger.info('%s - - [%s] "%s %s HTTP/1.1" %s %s'
-                       % (request.remote_addr,
-                          arrow.now().format('DD/MMM/YYYY:HH:mm:ss ZZ'),
-                          request.method, request.path, response.status_code,
-                          response.content_length))
-    response.headers['Server'] = app.config['SERVER']
-    return response
-
 def get_uid():
     try:
         g.uid = -1

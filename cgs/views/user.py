@@ -4,22 +4,11 @@ from flask import Blueprint, request, jsonify
 from passlib.hash import sha256_crypt
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
-from .. import app, limiter, logger, access_logger
+from .. import app, limiter, logger
 from ..models import Users, Scope
 
 blueprint = Blueprint('user', __name__)
 
-
-@app.after_request
-def after_request(response):
-    """访问信息写入日志"""
-    access_logger.info('%s - - [%s] "%s %s HTTP/1.1" %s %s'
-                       % (request.remote_addr,
-                          arrow.now().format('DD/MMM/YYYY:HH:mm:ss ZZ'),
-                          request.method, request.path, response.status_code,
-                          response.content_length))
-    response.headers['Server'] = app.config['SERVER']
-    return response
 
 @blueprint.route('')
 @blueprint.route('/')
@@ -82,20 +71,19 @@ def user_post():
                   scope=','.join(all_scope & request_scope), banned=0)
         db.session.add(u)
         db.session.commit()
-        return {
-            'id': u.id,
-            'username': u.username,
-            'scope': u.scope,
-            'date_created': str(u.date_created),
-            'date_modified': str(u.date_modified),
-            'banned': u.banned
-        }, 201
+        return jsonify({'id': u.id,
+                        'username': u.username,
+                        'scope': u.scope,
+                        'date_created': str(u.date_created),
+                        'date_modified': str(u.date_modified),
+                        'banned': u.banned}), 201
     else:
-        return {'error': 'username is already esist'}, 422
+        return jsonify({'message': 'username is already esist'}), 422
 
 @blueprint.route('/<int:user_id>', methods=['POST', 'PATCH'])
 @limiter.limit("60/minute")
-def user_put(user_id):
+def user_patch(user_id):
+    """修改用户信息"""
     try:
         # 所有权限范围
         all_scope = set()
@@ -116,6 +104,7 @@ def user_put(user_id):
         return jsonify(), 204
     except Exception as e:
         print (e)
+        raise
 
 @blueprint.route('/<int:user_id>', methods=['DELETE'])
 @limiter.limit("10/minute")
@@ -128,6 +117,7 @@ def user_delete(user_id):
         return jsonify(), 204
     except Exception as e:
         print (e)
+        raise
 
 @blueprint.route('/scope')
 def scope_get():
