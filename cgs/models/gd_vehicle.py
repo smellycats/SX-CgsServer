@@ -1,25 +1,9 @@
 # -*- coding: utf-8 -*-
 from cgs import db
 
-class Csys(db.Model):
-    """车身颜色"""
-    __bind_key__ = 'cgs'
-    __tablename__ = 'csys'
-    id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(1), unique=True)
-    name = db.Column(db.String(3), index=False)
-
-    def __init__(self, code, name):
-        self.code = code
-        self.name = name
-
-    def __repr__(self):
-        return '<Csys %r>' % self.code
-
 
 class GDVehicle(db.Model):
-    """车管所数据"""
-    __bind_key__ = 'cgs'
+    """广东车管所数据"""
     __tablename__ = 'vehicle_gd'
     id = db.Column(db.Integer, primary_key=True)
     hpzl = db.Column(db.String(2))

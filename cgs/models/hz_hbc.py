@@ -2,7 +2,7 @@
 from cgs import db
 
 class HbcAll(db.Model):
-    __bind_key__ = 'cgs'
+    """惠州黄标车数据"""
     __tablename__ = 'hbc_all'
     id = db.Column(db.Integer, primary_key=True)
     nxh = db.Column(db.String(32))
@@ -19,7 +19,7 @@ class HbcAll(db.Model):
 
 
 class HZVehicle(db.Model):
-    __bind_key__ = 'cgs'
+    """惠州车管所数据"""
     __tablename__ = 'hz_vehicle'
     id = db.Column(db.Integer, primary_key=True)
     xh = db.Column(db.String(32))
