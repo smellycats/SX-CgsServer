@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
-
 
 class Config(object):
     # 密码 string
@@ -14,12 +12,10 @@ class Config(object):
     # token生存周期，默认1小时 int
     EXPIRES = 7200
     # 数据库连接 string
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///../cgs.db'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:root@127.0.0.1/cgs'
     # 数据库连接 dict
-    SQLALCHEMY_BINDS = {
-        'cgs': 'mysql://root:root@127.0.0.1/cgs'
-    }
-    # 连接池
+    SQLALCHEMY_BINDS = {}
+    # 连接池 int
     SQLALCHEMY_POOL_SIZE = 20
     # 用户权限范围 dict
     SCOPE_USER = {}
@@ -35,3 +31,7 @@ class Develop(Config):
 
 class Production(Config):
     DEBUG = False
+
+
+class Testing(Config):
+    TESTING = True
