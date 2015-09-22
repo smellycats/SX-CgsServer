@@ -5,22 +5,22 @@ import os
 class Config(object):
     # 密码 string
     SECRET_KEY = 'hellokitty'
-    BASEDIR = os.path.abspath(os.path.dirname(__file__))
     # 主机IP string
     HOST = '0.0.0.0'
-    # 端口 string
-    PORT = '8099'
+    # 服务名称
+    SERVER = 'SX-CgsServer'
     # 加密次数 int
     ROUNDS = 123456
     # token生存周期，默认1小时 int
-    EXPIRES = 3600
+    EXPIRES = 7200
     # 数据库连接 string
     SQLALCHEMY_DATABASE_URI = 'sqlite:///../cgs.db'
     # 数据库连接 dict
     SQLALCHEMY_BINDS = {
-        'cgs': 'mysql://root:123456@192.168.1.29/cgs',
-        'hbc': 'mysql://root:123456@192.168.1.29:3306/hbc'
+        'cgs': 'mysql://root:root@127.0.0.1/cgs'
     }
+    # 连接池
+    SQLALCHEMY_POOL_SIZE = 20
     # 用户权限范围 dict
     SCOPE_USER = {}
     # 白名单启用 bool
