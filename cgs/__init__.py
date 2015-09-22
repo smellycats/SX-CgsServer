@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 import logging
 
-from flask import Flask
+import arrow
+from flask import Flask, request, jsonify
 from flask_limiter import Limiter, HEADERS
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.cache import Cache
@@ -37,8 +39,33 @@ app.register_blueprint(user.blueprint, url_prefix='/user')
 app.register_blueprint(gd_vehicle.blueprint, url_prefix='/gdvehicle')
 app.register_blueprint(hz_hbc.blueprint, url_prefix='/hzhbc')
 
-##app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../cgs.db'
-##app.config['SQLALCHEMY_BINDS'] = {
-##    'cgs': 'mysql://root:root@127.0.0.1/cgs',
-##    'hbc': 'mysql://root:root@127.0.0.1/hbc'
-##}
+@app.after_request
+def after_request(response):
+    """访问信息写入日志"""
+    access_logger.info('%s - - [%s] "%s %s HTTP/1.1" %s %s'
+                       % (request.remote_addr,
+                          arrow.now().format('DD/MMM/YYYY:HH:mm:ss ZZ'),
+                          request.method, request.path, response.status_code,
+                          response.content_length))
+    response.headers['Server'] = app.config['SERVER']
+    response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    return response
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return jsonify({'message': 'Not Found'}), 404,
+    {'Content-Type': 'application/json; charset=utf-8',
+     'Server': app.config['SERVER']}
+
+@app.errorhandler(405)
+def method_not_allow(error):
+    return jsonify({'message': 'Method Not Allowed'}), 405,
+    {'Content-Type': 'application/json; charset=utf-8',
+     'Server': app.config['SERVER']}
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return jsonify({'message': 'Internal Server Error'}), 500,
+    {'Content-Type': 'application/json; charset=utf-8',
+     'Server': app.config['SERVER']}
+
