@@ -1,4 +1,4 @@
-from cgs import app, views
+from cgs import app
 
 if __name__ == '__main__':
     app.run()
