@@ -23,6 +23,7 @@ def hbcall_get():
 def hzvehicle_get():
     h = HZVehicle.query.first()
     print h.hphm
+    
 
 if __name__ == "__main__":
     user_get()
